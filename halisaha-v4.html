@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Halı Saha Kadro v3 - Mobil Uyumlu</title>
+<style>
+:root{
+  --greenA:#28a745;
+  --greenA-light:#c3e6cb;
+  --blueB:#007bff;
+  --blueB-light:#cce5ff;
+  --bg:#f4f7f6;
+  --white:#fff;
+  --text:#222;
+  --shadow:0 4px 6px rgba(0,0,0,0.1);
+}
+*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+body{margin:0;background:var(--bg);padding:10px;display:flex;flex-direction:column;align-items:center;min-height:100vh;}
+h1{text-align:center;color:var(--text);margin-bottom:10px;font-size:1.6rem}
+.container{display:flex;flex-wrap:wrap;gap:20px;max-width:1100px;width:100%;justify-content:center}
+.pitch{flex:1;min-width:300px;position:relative;border-radius:12px;padding:16px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow);transition:transform 0.2s}
+.pitch:hover{transform:scale(1.02)}
+.pitch h2{text-align:center;margin:4px 0 10px 0;font-size:16px}
+.pitch.A{background:linear-gradient(180deg,#218838,var(--greenA));}
+.pitch.B{background:linear-gradient(180deg,#0056b3,var(--blueB));}
+.row{display:flex;justify-content:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.pos{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,0.3);user-select:none;text-align:center;font-weight:700;transition:all 0.2s;position:relative}
+.pos:hover{background:rgba(255,255,255,0.35);transform:scale(1.05)}
+.pos.disabled{opacity:0.6;cursor:not-allowed;background:rgba(0,0,0,0.2)}
+.name{font-size:12px;line-height:1.1;margin-top:4px;display:block}
+.center-line{width:4px;background:#ddd;height:100%;position:absolute;left:50%;top:0;transform:translateX(-50%)}
+.panel{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:16px;max-width:400px;width:100%;margin-top:20px}
+label{display:block;font-size:13px;margin-top:8px;color:#333}
+input,select{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px;font-size:14px}
+button{cursor:pointer;border:none;border-radius:8px;padding:8px 12px;font-weight:600;font-size:14px}
+.btn-main{background:var(--greenA);color:#fff;transition:0.2s}
+.btn-main:hover{opacity:0.9}
+.btn-blue{background:var(--blueB);color:#fff;transition:0.2s}
+.btn-blue:hover{opacity:0.9}
+.btn-ghost{background:#eee;transition:0.2s}
+.btn-ghost:hover{opacity:0.8}
+.small{font-size:12px;color:#555;margin-top:6px}
+footer{margin-top:12px;color:#666;font-size:13px;text-align:center}
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:100}
+.modal{background:#fff;border-radius:12px;padding:18px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto}
+.player-item{border:1px solid #eee;border-radius:8px;padding:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.success{background:#e9f8e9;color:#136a20;padding:4px 8px;border-radius:6px;font-size:13px}
+.danger{background:#ffeaea;color:#8b0f0f;padding:4px 8px;border-radius:6px;font-size:13px}
+@media(max-width:800px){
+  .container{flex-direction:column;align-items:center}
+  .center-line{display:none}
+  .row{flex-wrap:wrap;justify-content:center}
+  .pos{width:50px;height:50px;font-size:14px}
+  .panel{padding:12px;}
+  input,select{font-size:16px;padding:10px}
+  button{font-size:16px;padding:10px 14px;}
+}
+</style>
+</head>
+<body>
+<h1>⚽ Halı Saha Kadro v3</h1>
+<div class="container">
+  <div class="pitch A" id="pitchA">
+    <h2>Takım A</h2>
+    <div class="row"><div class="pos" data-team="A" data-pos="A-F1">F<br><span class="name" id="label-A-F1">Boş</span></div></div>
+    <div class="row">
+      <div class="pos" data-team="A" data-pos="A-M1">M<br><span class="name" id="label-A-M1">Boş</span></div>
+      <div class="pos" data-team="A" data-pos="A-M2">M<br><span class="name" id="label-A-M2">Boş</span></div>
+    </div>
+    <div class="row">
+      <div class="pos" data-team="A" data-pos="A-D1">D<br><span class="name" id="label-A-D1">Boş</span></div>
+      <div class="pos" data-team="A" data-pos="A-D2">D<br><span class="name" id="label-A-D2">Boş</span></div>
+      <div class="pos" data-team="A" data-pos="A-D3">D<br><span class="name" id="label-A-D3">Boş</span></div>
+    </div>
+    <div class="row"><div class="pos" data-team="A" data-pos="A-GK">GK<br><span class="name" id="label-A-GK">Boş</span></div></div>
+  </div>
+
+  <div class="center-line"></div>
+
+  <div class="pitch B" id="pitchB">
+    <h2>Takım B</h2>
+    <div class="row"><div class="pos" data-team="B" data-pos="B-F1">F<br><span class="name" id="label-B-F1">Boş</span></div></div>
+    <div class="row">
+      <div class="pos" data-team="B" data-pos="B-M1">M<br><span class="name" id="label-B-M1">Boş</span></div>
+      <div class="pos" data-team="B" data-pos="B-M2">M<br><span class="name" id="label-B-M2">Boş</span></div>
+    </div>
+    <div class="row">
+      <div class="pos" data-team="B" data-pos="B-D1">D<br><span class="name" id="label-B-D1">Boş</span></div>
+      <div class="pos" data-team="B" data-pos="B-D2">D<br><span class="name" id="label-B-D2">Boş</span></div>
+      <div class="pos" data-team="B" data-pos="B-D3">D<br><span class="name" id="label-B-D3">Boş</span></div>
+    </div>
+    <div class="row"><div class="pos" data-team="B" data-pos="B-GK">GK<br><span class="name" id="label-B-GK">Boş</span></div></div>
+  </div>
+</div>
+
+<div class="panel">
+  <strong>Kayıt Formu</strong>
+  <label>Takım</label>
+  <select id="teamSelect">
+    <option value="">Takım Seçin</option>
+    <option value="A">Takım A (Yeşil)</option>
+    <option value="B">Takım B (Mavi)</option>
+  </select>
+
+  <label>Seçilen Mevki</label>
+  <input type="text" id="posInput" readonly placeholder="Mevki seçilmedi">
+
+  <label>İsim</label>
+  <input type="text" id="nameInput">
+
+  <label>Soyisim</label>
+  <input type="text" id="surnameInput">
+
+  <label>Telefon</label>
+  <input type="tel" id="phoneInput" placeholder="+90 5xx xxx xx xx">
+
+  <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+    <button class="btn-main" id="registerBtn">Kaydol</button>
+    <button class="btn-ghost" id="clearBtn">Temizle</button>
+    <button class="btn-blue" id="adminBtn">Admin Girişi</button>
+  </div>
+  <div class="small">Not: Bu demo verileri sadece bu tarayıcıda saklanır.</div>
+</div>
+
+<footer>© 2025 Halı Saha Kadro v3 – Demo</footer>
+
+<div class="modal-back" id="modalBack"><div class="modal" id="modalContent"></div></div>
+
+<script>
+const STORAGE_KEY = "halisaha_v3";
+const ADMIN_PASS = "admin123";
+const POSITIONS = ["GK","D1","D2","D3","M1","M2","F1"];
+let data = {A:{},B:{}};
+let selectedTeam=null, selectedPos=null;
+
+function loadData(){
+  const s = localStorage.getItem(STORAGE_KEY);
+  data = s ? JSON.parse(s) : {A:{},B:{}};
+}
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function render(){
+  ["A","B"].forEach(team=>{
+    POSITIONS.forEach(p=>{
+      const key = team+"-"+p;
+      const el = document.querySelector(`.pos[data-pos="${key}"]`);
+      const label = document.getElementById("label-"+key);
+      const info = data[team][p];
+      if(info){
+        el.classList.add("disabled");
+        label.textContent = info.name + " " + info.surname;
+      } else {
+        el.classList.remove("disabled");
+        label.textContent = "Boş";
+      }
+    });
+  });
+}
+function clearForm(){
+  selectedTeam=null;selectedPos=null;
+  document.getElementById("teamSelect").value="";
+  document.getElementById("posInput").value="";
+  document.getElementById("nameInput").value="";
+  document.getElementById("surnameInput").value="";
+  document.getElementById("phoneInput").value="";
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  loadData();render();
+
+  document.querySelectorAll(".pos").forEach(el=>{
+    el.addEventListener("click",()=>{
+      const team = el.getAttribute("data-team");
+      const pos = el.getAttribute("data-pos").split("-")[1];
+      const teamSel = document.getElementById("teamSelect").value;
+      if(!teamSel){alert("Lütfen önce bir takım seçin.");return;}
+      if(team!==teamSel){alert("Bu mevki diğer takıma ait.");return;}
+      if(data[team][pos]){alert("Bu mevki dolu!");return;}
+      selectedTeam=team;selectedPos=pos;
+      document.getElementById("posInput").value = `${team==='A'?'Takım A':'Takım B'} - ${pos}`;
+    });
+  });
+
+  document.getElementById("registerBtn").addEventListener("click",()=>{
+    const t = selectedTeam, p = selectedPos;
+    if(!t||!p){alert("Lütfen takım ve mevki seçin.");return;}
+    const name=document.getElementById("nameInput").value.trim();
+    const sname=document.getElementById("surnameInput").value.trim();
+    const phone=document.getElementById("phoneInput").value.trim();
+    if(!name||!sname||!phone){alert("Lütfen tüm alanları doldurun.");return;}
+    if(data[t][p]){alert("Bu mevki dolu!");return;}
+    data[t][p]={name,surname:sname,phone};
+    saveData();render();clearForm();
+    alert("Kayıt başarılı!");
+  });
+
+  document.getElementById("clearBtn").addEventListener("click",clearForm);
+  document.getElementById("adminBtn").addEventListener("click",()=>showAdminLogin());
+});
+
+/* ---------- ADMIN ---------- */
+const modalBack=document.getElementById("modalBack");
+const modalContent=document.getElementById("modalContent");
+function showModal(html){modalContent.innerHTML=html;modalBack.style.display="flex";}
+function closeModal(){modalBack.style.display="none";modalContent.innerHTML="";}
+modalBack.addEventListener("click",e=>{if(e.target===modalBack)closeModal();});
+
+function showAdminLogin(){
+  showModal(`
+    <h3>Admin Girişi</h3>
+    <input type="password" id="adminPass" placeholder="Şifre">
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button class="btn-main" id="loginBtn">Giriş</button>
+      <button class="btn-ghost" onclick="closeModal()">Kapat</button>
+    </div>
+    <div class="small">Demo şifresi: admin123</div>
+  `);
+  document.getElementById("loginBtn").addEventListener("click",()=>{
+    const p=document.getElementById("adminPass").value;
+    if(p===ADMIN_PASS){showAdminPanel();}else alert("Yanlış şifre!");
+  });
+}
+
+function showAdminPanel(){
+  let html=`<h3>Admin Paneli</h3><div>`;
+  ["A","B"].forEach(team=>{
+    html+=`<h4>${team==='A'?'🟢 Takım A':'🔵 Takım B'}</h4>`;
+    const regs=Object.entries(data[team]);
+    if(regs.length===0) html+=`<div class='small'>Kayıt yok</div>`;
+    regs.forEach(([pos,info])=>{
+      html+=`
+        <div class="player-item">
+          <div>
+            <strong>${info.name} ${info.surname}</strong><br>
+            <span class="small">${info.phone}</span><br>
+            <span class="small">Mevki: ${pos}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <select data-pos="${team}-${pos}">
+              ${["A","B"].map(t=>`<optgroup label="${t==='A'?'Takım A':'Takım B'}">`+
+                POSITIONS.map(p2=>`<option value="${t}-${p2}" ${(t===team&&p2===pos)?'selected':''}>${p2}</option>`).join("")+
+              `</optgroup>`).join("")}
+            </select>
+            <div style="display:flex;gap:4px;">
+              <button class="success" data-save="${team}-${pos}">Kaydet</button>
+              <button class="danger" data-del="${team}-${pos}">Sil</button>
+            </div>
+          </div>
+        </div>`;
+    });
+  });
+  html+=`</div><div style="margin-top:8px;text-align:right;"><button class="btn-ghost" onclick="closeModal()">Kapat</button></div>`;
+  showModal(html);
+  document.querySelectorAll("[data-save]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const key=btn.getAttribute("data-save");
+      const [t,p]=key.split("-");
+      const sel=document.querySelector(`[data-pos="${key}"]`);
+      const val=sel.value.split("-");
+      const nt=val[0], np=val[1];
+      const info=data[t][p];
+      if(!info)return;
+      delete data[t][p];
+      if(data[nt][np]) alert("Yeni mevki doluydu, üzerine yazıldı.");
+      data[nt][np]=info;
+      saveData();render();showAdminPanel();
+    });
+  });
+  document.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const key=btn.getAttribute("data-del");
+      const [t,p]=key.split("-");
+      if(confirm("Silmek istiyor musun?")){
+        delete data[t][p];saveData();render();showAdminPanel();
+      }
+    });
+  });
+}
+</script>
+</body>
+</html>
